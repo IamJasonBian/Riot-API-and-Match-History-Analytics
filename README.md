@@ -1,6 +1,8 @@
 Riot API and Match History Analytics in R
 ================
 
+The following set of R code demos using Riot's API functionality as a demo for Thomas Winegarden's INFO 201 - Technical Foundations section, this notebook walks step by step through the Analysis.R script which can be run in Rstudio. In order to view this README in Rstudio, open up the Analysis.Rmd file. 
+
 ### Api Functions
 
 We will use a riot API key for this demo. To register for your own riot API key please go to <https://developer.riotgames.com/>. The provided key for this demonstration is RRGAPI-fbccf05d-d936-45b3-a744-cc2c268b887b. Note, this key will only last for 24 hours. Additional keys you can try are:
