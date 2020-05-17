@@ -1,0 +1,102 @@
+---
+title: "Riot API and Match History Analytics in R "
+output: rmarkdown::github_document
+fontsize: 15 pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Api Functions
+
+We will use a riot API key for this demo. To register for your own riot API key please go to <https://developer.riotgames.com/>. The provided key for this demonstration is RRGAPI-fbccf05d-d936-45b3-a744-cc2c268b887b. Note, this key will only last for 24 hours. Additional keys you can try are:
+
+* Key 1 [Will add key for demo]
+* Key 2 [Will add key for demo]
+
+
+### Calling the Api
+
+To use the api, there's two functions that are called in this analysis, Endpoint_func.R and Item_func.R.
+
+```{r libraries}
+source("Endpoint_func.R")
+source("Item_func.R")
+```
+
+Endpoint_func contains functions that we use to call the Api. Within the Endpoint_func, we have the getRIOT function. This acts as an wrapper to build an URL string. Additional functions such as getSummonerByName calls the getRiot function and appends additional parameters to build endpoints that we can query using the API.
+
+For a list of all endpoints, please go to <https://developer.riotgames.com/apis>
+
+Within Endpoint_func.R, there are three libraries we need to install. If they are not installed yet, please install them now in your local environment: 
+
+  Libraries:
+
+* RCurl : Allows us to download data from Riot's Api into json format using the getURL function
+* rjson: Allows us to convert the json format into an R list
+* stringr: Allows us to build string transformations to build the request URL
+
+Item_func contains functions built on Endpoint_func to perform basic analysis and return plotting. The analysis provided in Item_func is the ability to see historical item win rates specific to a League of Legends player and character. In order to have this functionality, we call the Endpoint_func.R functions with parameters passed in specific to request such as summoner name, champion and API key. We also use getURL to query static game data such as a repository of all the items in the game. An example of a static json file hosted online is here: <http://ddragon.leagueoflegends.com/cdn/10.6.1/data/en_US/champion.json> 
+
+First, lets get our encrypted_account_id specific to us so we can pull additional data. For those league players here, you can try your own summoner name!:
+```{r example 1}
+
+key = "RGAPI-fbccf05d-d936-45b3-a744-cc2c268b887b"
+getSummonerByName('jakeateworld', key = key)
+
+
+```
+We see that this command returns a list with our accountID, name, profileIconId, and even summonerLevel! Next, let's call this again and store the accountId as an R object called encrypted_account_id. 
+
+```{r example 2}
+
+encrypted_account_id <- getSummonerByName('jakeateworld', key = key)$accountId
+encrypted_account_id
+
+```
+We can then use this encrypted_account_id to return a matchID with and obtain a match_list R object. If you explore this R object (match_list), in R studio, you can see this contains a plethora of in game data from items to firstbloods to many other statistics. 
+
+```{r example 3}
+
+
+matchID_example <- getGameBySummonerID(encrypted_account_id, key = key)$matches[[1]]$gameId
+matchID_example
+
+match_list <- getGameByMatchID(matchID_example, key = key)
+
+```
+### Item Analysis Function and Plotting
+
+Finally, we call our item_analysis function. This function takes the match_list and static json data to calculate overall champion winrates and the winrates of all items the summoner would buy using that champion. Under the hood, item_analysis finds all the matches associated with the Champion that is passed in and queries for a match_list for every match. Item_analysis then performs transforms for all the gathered data and consolidates it into a single dataframe. 
+
+We can then color code the winrates for further plotting with an item being Green if it is higher than your personal champion winrate and Red if worse than your personal champion winrate. The function returns a dataframe called df with the results. 
+
+```{r example 4}
+
+df <- item_analysis(champion = "Zed", name = "JAKEATEWORLD", key = key)
+
+df$Status <- ifelse(df$win_percent > df$champion_winrate, "Green", ifelse(df$win_percent < df$champion_winrate, "Red", "Yellow"))
+df$ID <- 1:nrow(df)
+
+head(df, n = 50)
+
+```
+
+Lastly, we can plot our returned dataframe to visualize everything through the ggplot library!
+
+```{r fig2, fig.height = 6, fig.width = 10, fig.align = "center"}
+library(ggplot2)
+
+options(repr.plot.width=10, repr.plot.height=6)
+
+ggplot(data = df, aes(x=ID, y=win_percent, label = name))  +
+  geom_point(aes(colour = Status, size = occur), alpha = 0.5) + 
+  geom_text(aes(x=ID, y=win_percent, label = name), angle = 45, nudge_y = 0.05, nudge_x = 0.4, size = 3) +
+  scale_x_continuous(expand = c(.1, .1)) +
+  scale_y_continuous(expand = c(.1, .1)) +
+  scale_color_manual(name = "Champion Specific Win Rate", 
+                     values = c("Red" = "Red", "Green" = "Green", "Yellow" = "Yellow"),
+                    labels = c("Above Champion Win Rate", "Below Champion Win Rate", "At Champion Win Rate")) + theme_bw()
+  
+```
