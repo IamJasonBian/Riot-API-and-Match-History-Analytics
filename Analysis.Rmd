@@ -10,10 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Api Functions
 
-We will use a riot API key for this demo. To register for your own riot API key please go to <https://developer.riotgames.com/>. The provided key for this demonstration is RRGAPI-fbccf05d-d936-45b3-a744-cc2c268b887b. Note, this key will only last for 24 hours. Additional keys you can try are:
+We will use a riot API key for this demo. To register for your own riot API key please go to <https://developer.riotgames.com/>. The provided key for this demonstration is RGAPI-64a03783-47da-43a9-a2f4-abb219d82d4f. Note, this key will only last for 24 hours. Additional keys you can try are:
 
-* Key 1 [Will add key for demo]
-* Key 2 [Will add key for demo]
+*  Key 1 RGAPI-64a03783-47da-43a9-a2f4-abb219d82d4f
+
 
 
 ### Calling the Api
