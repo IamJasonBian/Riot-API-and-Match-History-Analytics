@@ -2,7 +2,7 @@ source("Endpoint_func.R")
 source("Item_func.R")
 
 
-key = "RGAPI-fbccf05d-d936-45b3-a744-cc2c268b887b"
+key = "RGAPI-64a03783-47da-43a9-a2f4-abb219d82d4f"
 
 getSummonerByName('jakeateworld', key = "RGAPI-fbccf05d-d936-45b3-a744-cc2c268b887b")
 
