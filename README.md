@@ -5,10 +5,10 @@ The following set of R code demos using Riot's API functionality as a demo for T
 
 ### Api Functions
 
-We will use a riot API key for this demo. To register for your own riot API key please go to <https://developer.riotgames.com/>. The provided key for this demonstration is RRGAPI-fbccf05d-d936-45b3-a744-cc2c268b887b. Note, this key will only last for 24 hours. Additional keys you can try are:
+We will use a riot API key for this demo. To register for your own riot API key please go to <https://developer.riotgames.com/>. The provided key for this demonstration is RGAPI-55eca70b-b91f-4eef-82e3-51a55cd4cd29. Note, this key will only last for 24 hours. Additional keys you can try are:
 
--   Key 1 \[Will add key for demo\]
--   Key 2 \[Will add key for demo\]
+-   Key 1 RGAPI-64a03783-47da-43a9-a2f4-abb219d82d4f
+-   Key 2 RGAPI-3f12750b-4610-401c-8432-a300cc7b3062
 
 ### Calling the Api
 
