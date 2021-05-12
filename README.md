@@ -1,7 +1,7 @@
 Riot API and Match History Analytics in R
 ================
 
-This is a python branch with a consolidated build called lol_tool 
+This is a python branch with a consolidated build called lol_tool.py
 
 ### Api Functions
 
