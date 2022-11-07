@@ -15,10 +15,12 @@ getRIOT <- function(version, key=NULL, base, type=NULL, id=NULL, attr=NULL, para
   
   if (static)
     
-    uri <- "https://na1.api.riotgames.com/lol"
+   
+    uri <- "https://americas.api.riotgames.com/lol"
+  
   else
-    
     uri <- "https://na1.api.riotgames.com/lol"
+  
   uri <- sprintf("%s/%s/%s",uri,version,base)
   if (!is.null(type))
     uri <- sprintf("%s/%s",uri,type)
@@ -44,8 +46,12 @@ getRIOT <- function(version, key=NULL, base, type=NULL, id=NULL, attr=NULL, para
 getSummonerByName <- function(summonerName, key) 
   getRIOT(version="summoner/v4", key = key, base="summoners/by-name", id=str_replace_all(tolower(summonerName)," ",""), static=FALSE)
 
-getGameBySummonerID <- function(id, key) 
-  getRIOT(version="match/v4", key = key, base="matchlists/by-account", id=id, static=FALSE)
+getGameByPuuid <- function(id, key) 
+  getRIOT(version="match/v5", key = key, base=paste("matches/by-puuid/",id,"/ids", sep = ""), static=TRUE)
+
+# Depreciated
+# getGameBySummonerID <- function(id, key) 
+#  getRIOT(version="match/v5", key = key, base="matchlists/by-account", id=id, static=FALSE)
 
 getGameByMatchID <- function(id, key) 
-  getRIOT(version="match/v4", key = key, base="matches", id=id, static=FALSE)
+  getRIOT(version="match/v5", key = key, base="matches", id=id, static=TRUE)

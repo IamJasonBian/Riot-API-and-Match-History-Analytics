@@ -1,10 +1,10 @@
 item_analysis <- function(champion, name, key){
   
   #Pull from Data Dragon (Static Pull)
-  r = getURL('http://ddragon.leagueoflegends.com/cdn/10.6.1/data/en_US/item.json')
+  r = getURL('http://ddragon.leagueoflegends.com/cdn/12.21.1/data/en_US/item.json')
   item_master_list = fromJSON(r)
   
-  r = getURL('http://ddragon.leagueoflegends.com/cdn/10.6.1/data/en_US/champion.json')
+  r = getURL('http://ddragon.leagueoflegends.com/cdn/12.21.1/data/en_US/champion.json')
   champion_master_list = fromJSON(r)
   
   
@@ -33,8 +33,8 @@ item_analysis <- function(champion, name, key){
   me = response
   
   encrypted_account_id <- me$accountId
-  my_matches <- getGameBySummonerID(encrypted_account_id, key)
-  total_games_in_season <- my_matches$totalGames
+  my_matches <- getGameByPuuid(encrypted_account_id, key = key)
+  total_games_in_season <- length(my_matches)
   print(paste("Total games in season:", total_games_in_season))
   
   #Find the id of the input champion name
@@ -50,10 +50,10 @@ item_analysis <- function(champion, name, key){
   
   
   
-  for(i in 1:length(my_matches$matches)){
+  for(i in 1:length(my_matches)){
     
-    if(as.numeric(my_matches$matches[[i]]$champion) == as.numeric(champion_id)){
-      champion_games <- c(champion_games, my_matches$matches[[i]]$gameId[1])
+    if(as.numeric(my_matches[[i]]$champion) == as.numeric(champion_id)){
+      champion_games <- c(champion_games, my_matches[[i]]$gameId[1])
     }
   
   }

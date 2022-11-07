@@ -2,20 +2,19 @@ source("Endpoint_func.R")
 source("Item_func.R")
 
 
-key = "RGAPI-64a03783-47da-43a9-a2f4-abb219d82d4f"
+key = "RGAPI-949fa3d6-5c89-423a-8f5a-47a8a850174c"
 
-getSummonerByName('jakeateworld', key = "RGAPI-fbccf05d-d936-45b3-a744-cc2c268b887b")
+getSummonerByName('jakeateworld', key = key)
 
-encrypted_account_id <- getSummonerByName('jakeateworld', key =key)$accountId
+encrypted_account_id <- getSummonerByName('jakeateworld', key =key)$puuid
 encrypted_account_id
 
-matchID_example <- getGameBySummonerID(encrypted_account_id, key = key)$matches[[1]]$gameId
+matchID_example <- getGameByPuuid(encrypted_account_id, key = key)[[1]]
 matchID_example
 
-match_list <- getGameByMatchID(matchID_example, key = key)
+match_list <- getGameByPuuid(encrypted_account_id, key = key)
 
-
-df <- item_analysis(champion = "Zed", name = "JAKEATEWORLD", key = key)
+df <- item_analysis(champion = "Riven", name = "JAKEATEWORLD", key = key)
 
 df$Status <- ifelse(df$win_percent > df$champion_winrate, "Green", ifelse(df$win_percent < df$champion_winrate, "Red", "Yellow"))
 df$ID <- 1:nrow(df)
