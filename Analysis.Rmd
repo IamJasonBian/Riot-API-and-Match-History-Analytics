@@ -10,10 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Api Functions
 
-We will use a riot API key for this demo. To register for your own riot API key please go to <https://developer.riotgames.com/>. The provided key for this demonstration is RGAPI-64a03783-47da-43a9-a2f4-abb219d82d4f. Note, this key will only last for 24 hours. Additional keys you can try are:
+We will use a riot API key for this demo. To register for your own riot API key please go to <https://developer.riotgames.com/>. The provided key for this demonstration is RGAPI-67f20909-15ef-4c0e-94bc-9e072d70c642. Note, this key will only last for 24 hours. Additional keys you can try are:
 
-*  Key 1 RGAPI-64a03783-47da-43a9-a2f4-abb219d82d4f
-
+*  Key 1 RGAPI-67f20909-15ef-4c0e-94bc-9e072d70c642
+*  Key 2 RGAPI-1b96e96c-d34a-45b0-b02d-85b35af4bef2
 
 
 ### Calling the Api
@@ -42,7 +42,8 @@ Item_func contains functions built on Endpoint_func to perform basic analysis an
 First, lets get our encrypted_account_id specific to us so we can pull additional data. For those league players here, you can try your own summoner name!:
 ```{r example 1}
 
-key = "RGAPI-fbccf05d-d936-45b3-a744-cc2c268b887b"
+key = "RGAPI-67f20909-15ef-4c0e-94bc-9e072d70c642"
+
 getSummonerByName('jakeateworld', key = key)
 
 
@@ -51,35 +52,42 @@ We see that this command returns a list with our accountID, name, profileIconId,
 
 ```{r example 2}
 
-encrypted_account_id <- getSummonerByName('jakeateworld', key = key)$accountId
+encrypted_account_id <- getSummonerByName('jakeateworld', key =key)$puuid
 encrypted_account_id
 
 ```
-We can then use this encrypted_account_id to return a matchID with and obtain a match_list R object. If you explore this R object (match_list), in R studio, you can see this contains a plethora of in game data from items to firstbloods to many other statistics. 
+We can then use this encrypted_account_id to return a matchID with and obtain a match_list R object. If you explore this R object (matches), in R studio, you can see this contains a plethora of in game data from items to damage dealt. 
 
 ```{r example 3}
 
 
-matchID_example <- getGameBySummonerID(encrypted_account_id, key = key)$matches[[1]]$gameId
+matchID_example <- getGameByPuuid(encrypted_account_id, key = key)[[1]]
 matchID_example
 
-match_list <- getGameByMatchID(matchID_example, key = key)
+matches <- getGameByPuuid(encrypted_account_id, key = key)
+
+Game_example <- getGameByMatchID(matchID_example, key = key)
+Game_example$metadata
 
 ```
 ### Item Analysis Function and Plotting
 
-Finally, we call our item_analysis function. This function takes the match_list and static json data to calculate overall champion winrates and the winrates of all items the summoner would buy using that champion. Under the hood, item_analysis finds all the matches associated with the Champion that is passed in and queries for a match_list for every match. Item_analysis then performs transforms for all the gathered data and consolidates it into a single dataframe. 
+Finally, we call our item_analysis function. This function takes the match_list and static json data to calculate overall winrates from recent games. Under the hood, item_analysis finds all the matches associated with the player that is passed in and extracts item information for every match. Item_analysis then performs transforms for all the gathered data and consolidates it into a single dataframe. 
 
-We can then color code the winrates for further plotting with an item being Green if it is higher than your personal champion winrate and Red if worse than your personal champion winrate. The function returns a dataframe called df with the results. 
+We can then color code the winrates for further plotting with an item being Green if it is higher than your total recent game winrates and Red if worse than your recent game winrates. The function returns a dataframe called df with the results. 
 
 ```{r example 4}
 
-df <- item_analysis(champion = "Zed", name = "JAKEATEWORLD", key = key)
+df <- item_analysis(name = "JAKEATEWORLD", key = key)
 
-df$Status <- ifelse(df$win_percent > df$champion_winrate, "Green", ifelse(df$win_percent < df$champion_winrate, "Red", "Yellow"))
+df$Status <- ifelse(df$win_percent > df$total_win_rate, "Green", ifelse(df$total_win_rate < df$total_win_rate, "Red", "Yellow"))
 df$ID <- 1:nrow(df)
 
-head(df, n = 50)
+df <- df[order(df$occur, decreasing = TRUE),]
+
+plot_df <- head(df, n = 30)
+
+head(df, n = 30)
 
 ```
 
@@ -88,15 +96,13 @@ Lastly, we can plot our returned dataframe to visualize everything through the g
 ```{r fig2, fig.height = 6, fig.width = 10, fig.align = "center"}
 library(ggplot2)
 
-options(repr.plot.width=10, repr.plot.height=6)
-
-ggplot(data = df, aes(x=ID, y=win_percent, label = name))  +
+ggplot(data = plot_df, aes(x=ID, y=win_percent, label = name))  +
   geom_point(aes(colour = Status, size = occur), alpha = 0.5) + 
-  geom_text(aes(x=ID, y=win_percent, label = name), angle = 45, nudge_y = 0.05, nudge_x = 0.4, size = 3) +
+  geom_text(aes(x=ID, y=win_percent, label = name), angle = 45, nudge_y = 0.1, nudge_x = 0.1, size = 3) +
   scale_x_continuous(expand = c(.1, .1)) +
   scale_y_continuous(expand = c(.1, .1)) +
-  scale_color_manual(name = "Champion Specific Win Rate", 
+  scale_color_manual(name = "Total Win Rate", 
                      values = c("Red" = "Red", "Green" = "Green", "Yellow" = "Yellow"),
-                    labels = c("Above Champion Win Rate", "Below Champion Win Rate", "At Champion Win Rate")) + theme_bw()
+                     labels = c("Above Total Win Rate", "Below Total Win Rate", "At Total Win Rate")) + theme_bw()
   
 ```
