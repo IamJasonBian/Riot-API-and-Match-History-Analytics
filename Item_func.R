@@ -1,4 +1,4 @@
-item_analysis <- function(champion, name, key){
+item_analysis <- function(name, key){
   
   #Pull from Data Dragon (Static Pull)
   r = getURL('http://ddragon.leagueoflegends.com/cdn/12.21.1/data/en_US/item.json')
@@ -32,67 +32,49 @@ item_analysis <- function(champion, name, key){
   
   me = response
   
-  encrypted_account_id <- me$accountId
+  encrypted_account_id <- me$puuid
   my_matches <- getGameByPuuid(encrypted_account_id, key = key)
-  total_games_in_season <- length(my_matches)
-  print(paste("Total games in season:", total_games_in_season))
-  
-  #Find the id of the input champion name
-  champion_id = champion_master_list$data[[champion]]$key
-  
-  if(is.null(champion_id)){
-    print("Champion name not found!")
-    return()
-  }
 
-  #Search all games for selected champion within the summoner's match history
-  champion_games = list()
-  
-  
-  
-  for(i in 1:length(my_matches)){
-    
-    if(as.numeric(my_matches[[i]]$champion) == as.numeric(champion_id)){
-      champion_games <- c(champion_games, my_matches[[i]]$gameId[1])
-    }
-  
-  }
-  
-  if(length(champion_games) == 0){
-    print("You have never played this champion in the current season!")
+  if(length(my_matches) == 0){
+    print("You have played no games in the current season!")
   }
   
   #Find the items bought when the games were played in the champion_games list
   item_dict= list()
   item_list = list()
+  champion_list = list()
   
   win_list = c()
   game_counter = 0
   
-  for(i in champion_games){
+  for(i in my_matches){
     match = getGameByMatchID(i, key)
     for(j in 1:10){
       
-      if(match$participantIdentities[[j]]$player$summonerName == name){
+      if(match$metadata$participants[[j]] == encrypted_account_id){
         break
       }
     }
     
-    player = match$participants[[j]]
+    player = match$info$participants[[j]]
     
     #convert i to character to create key value pair
     i <- as.character(i)
-    win_list <- c(win_list, player$stats$win[1])
-    item_dict[[i]] <- c(player$stats$item0, player$stats$item1, player$stats$item2,
-                                     player$stats$item3, player$stats$item4, player$stats$item5,
-                                     player$stats$item6)
+    win_list <- c(win_list, player$win)
+    item_dict[[i]] <- c(player$item0, player$item1, player$item2,
+                                     player$item3, player$item4, player$item5,
+                                     player$item6)
     
-    item_list <- c(item_list, c(player$stats$item0, player$stats$item1, player$stats$item2,
-                                player$stats$item3, player$stats$item4, player$stats$item5,
-                                player$stats$item6))
+    item_list <- c(item_list, c(player$item0, player$item1, player$item2,
+                                player$item3, player$item4, player$item5,
+                                player$item6))
     
     game_counter = game_counter + 1
+    champion_list <- c(champion_list, c(player$championName))
   }
+  
+  #return(champion_list)
+  
   
   
   #Find relationship between items and win rate-------------------------
@@ -115,10 +97,10 @@ item_analysis <- function(champion, name, key){
   links = data.frame(name =character(), win_percent = double(), occur = double())
   
   #Your overall champion win rate
-  champion_win_rate = sum(win_list)/game_counter
+  total_win_rate = sum(win_list)/game_counter
   
   
-  print(paste0("Current champion win rate is ", champion_win_rate))
+  print(paste0("Current champion win rate is ", total_win_rate, " at a game count of ", game_counter))
   
   for(i in 1:length(item_list_uniq)){
     
@@ -155,7 +137,7 @@ item_analysis <- function(champion, name, key){
     
   }
   
-  links$champion_winrate <- champion_win_rate
+  links$total_win_rate <- total_win_rate
   return(links)
     
   

@@ -49,9 +49,5 @@ getSummonerByName <- function(summonerName, key)
 getGameByPuuid <- function(id, key) 
   getRIOT(version="match/v5", key = key, base=paste("matches/by-puuid/",id,"/ids", sep = ""), static=TRUE)
 
-# Depreciated
-# getGameBySummonerID <- function(id, key) 
-#  getRIOT(version="match/v5", key = key, base="matchlists/by-account", id=id, static=FALSE)
-
 getGameByMatchID <- function(id, key) 
   getRIOT(version="match/v5", key = key, base="matches", id=id, static=TRUE)
