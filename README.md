@@ -1,6 +1,10 @@
 Riot API and Match History Analytics in R
 ================
 
+### Previous Sessions:
+
+October 19: https://drive.google.com/file/d/1NF0ORHEuiphztKYZdq5GLbTcejkSHUzk/view?usp=share_link
+
 ### Api Functions
 
 We will use a riot API key for this demo. To register for your own riot
