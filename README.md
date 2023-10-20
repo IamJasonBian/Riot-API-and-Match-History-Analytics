@@ -3,7 +3,7 @@ Riot API and Match History Analytics in R
 
 ### Previous Sessions:
 
-October 19: https://drive.google.com/file/d/1NF0ORHEuiphztKYZdq5GLbTcejkSHUzk/view?usp=share_link
+October 19 2022: https://drive.google.com/file/d/1NF0ORHEuiphztKYZdq5GLbTcejkSHUzk/view?usp=share_link
 
 ### Api Functions
 
